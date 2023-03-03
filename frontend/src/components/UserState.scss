@@ -1,0 +1,27 @@
+.keyPresses {
+  display: grid;
+  width: 400px;
+  grid-template-areas:
+    ". up ."
+    "left down right";
+
+  .keyPress {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &.up {
+      grid-area: up;
+    }
+    &.down {
+      grid-area: down;
+    }
+    &.right {
+      grid-area: right;
+    }
+    &.left {
+      grid-area: left;
+    }
+  }
+}
