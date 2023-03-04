@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import GameCanvas from "./components/GameCanvas";
-import UserState from "./components/UserState";
+import UserStateView from "./components/UserStateView";
 import {
   disconnectSocket,
   initSocketConnection,
@@ -22,6 +22,23 @@ const App = () => {
     left: 0,
   });
 
+  const [userStateView, setUserStateView] = useState({
+    id: "",
+    location: {
+      x: 0,
+      y: 0,
+    },
+    keyPress: {
+      up: 0,
+      down: 0,
+      right: 0,
+      left: 0,
+    },
+    overlapped: false,
+    radius: 0,
+    speed: 0,
+  });
+
   // React canvas 기본 세팅 코드
   const canvasRef = useRef(null);
   const [ctx, setCtx] = useState();
@@ -39,6 +56,11 @@ const App = () => {
       setCharList(charList);
     });
 
+    socket.on("setId", (id) => {
+      setUserStateView({ ...userStateView, id });
+    });
+
+
     // 브라우저 탭을 닫으면 socket 연결을 끊도록 함
     window.addEventListener("beforeunload", disconnectSocket);
   }, [socket, disconnectSocket, initSocketConnection]);
@@ -51,7 +73,8 @@ const App = () => {
   // charList 변경을 감지할 때마다 실행
   useEffect(() => {
     drawChar();
-  }, [charList]);
+    setUserStateView(charList.find((char) => char.id === userStateView.id));
+  }, [charList, userStateView]);
 
   // 캐릭터들을 canvas에 그려주는 함수
   const drawChar = () => {
@@ -118,7 +141,7 @@ const App = () => {
       />
 
       {/* 키 눌림 상태를 시각적으로 보여줌 */}
-      <UserState keyPress={keyPress} />
+      {userStateView && <UserStateView keyPress={keyPress} userStateView={userStateView} />}
     </>
   );
 };

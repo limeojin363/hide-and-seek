@@ -1,0 +1,40 @@
+.UserStateView {
+  display: flex;
+  .keyPresses {
+    display: grid;
+    width: 400px;
+    grid-template-areas:
+      ". up ."
+      "left down right";
+
+    .keyPress {
+      margin: 2.5px;
+      width: 130px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      &.up {
+        grid-area: up;
+      }
+      &.down {
+        grid-area: down;
+      }
+      &.right {
+        grid-area: right;
+      }
+      &.left {
+        grid-area: left;
+      }
+      &.pressed {
+        background: #000;
+        color: white;
+      }
+    }
+    border: 1px solid black;
+  }
+
+  .otherStates {
+    border: 1px solid black;
+  }
+}

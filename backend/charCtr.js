@@ -19,6 +19,8 @@ let Character = class {
     };
     // 겹쳤는지
     this.overlapped = false;
+    // 숨었는지
+    this.hidden = false;
     // 반지름
     this.radius = 25;
     // 이동 속도
@@ -45,10 +47,24 @@ const deleteChar = (id) => {
 // 캐릭터 이동
 const moveChar = (id) => {
   charList.map((char) => {
-    char.location.y -= char.keyPress.up * char.speed;
-    char.location.y += char.keyPress.down * char.speed;
-    char.location.x -= char.keyPress.left * char.speed;
-    char.location.x += char.keyPress.right * char.speed;
+    const { up, down, left, right } = char.keyPress;
+
+    if (
+      (up && !down && left && !right) ||
+      (up && !down && !left && right) ||
+      (!up && down && left && !right) ||
+      (!up && down && !left && right)
+    ) {
+      char.location.y -= up * char.speed * 2 ** -0.5;
+      char.location.y += down * char.speed * 2 ** -0.5;
+      char.location.x -= left * char.speed * 2 ** -0.5;
+      char.location.x += right * char.speed * 2 ** -0.5;
+    } else {
+      char.location.y -= up * char.speed;
+      char.location.y += down * char.speed;
+      char.location.x -= left * char.speed;
+      char.location.x += right * char.speed;
+    }
   });
 };
 
