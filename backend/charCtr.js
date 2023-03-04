@@ -24,7 +24,7 @@ let Character = class {
     // 반지름
     this.radius = 25;
     // 이동 속도
-    this.speed = 1.0;
+    this.speed = 3.0;
   }
 };
 
