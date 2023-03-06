@@ -35,15 +35,17 @@ io.on("connect", (socket) => {
   io.emit("setId", socket.id);
 
   // 리스너 등록: 키 눌림 상태 변경
-  socket.on("updateKeyPress", (keyPress) => {
-    charCtr.updateKeyPress(socket.id, keyPress);
+  socket.on("updateKeyPress", (data) => {
+    charCtr.updateKeyPress(socket.id, data.type, data.key);
+    console.log(data.key);
     // 이후 변경된 charList 전송
     io.emit("charListUpdate", charCtr.charList);
   });
 
-  socket.on("userStateUpdate", (userState) => {
-    charCtr.updateUserState(socket.id, userState);
-    console.log(charCtr.charList);
+  // 리스너 등록: 속도 변경
+  socket.on("updateSpeed", (data) => {
+    charCtr.updateSpeed(socket.id, data.type);
+
     // 이후 변경된 charList 전송
     io.emit("charListUpdate", charCtr.charList);
   });

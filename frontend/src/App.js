@@ -14,14 +14,6 @@ const App = () => {
   // 게임의 모든 캐릭터 정보를 담는 state
   const [charList, setCharList] = useState([]);
 
-  // 현재 플레이어의 key 눌림 정보를 담는 state
-  const [keyPress, setKeyPress] = useState({
-    up: 0,
-    down: 0,
-    right: 0,
-    left: 0,
-  });
-
   const [userStateView, setUserStateView] = useState({
     id: "",
     location: {
@@ -29,11 +21,12 @@ const App = () => {
       y: 0,
     },
     keyPress: {
-      up: 0,
-      down: 0,
-      right: 0,
-      left: 0,
+      ArrowUp: 0,
+      ArrowDown: 0,
+      ArrowLeft: 0,
+      ArrowRight: 0,
     },
+    hidden: false,
     overlapped: false,
     radius: 0,
     speed: 0,
@@ -60,17 +53,11 @@ const App = () => {
       setUserStateView({ ...userStateView, id });
     });
 
-
     // 브라우저 탭을 닫으면 socket 연결을 끊도록 함
     window.addEventListener("beforeunload", disconnectSocket);
   }, [socket, disconnectSocket, initSocketConnection]);
 
-  // keyPress state가 바뀔 때마다 해당 정보 전송
-  useEffect(() => {
-    sendSocketEvent("updateKeyPress", keyPress);
-  }, [keyPress]);
-
-  // charList 변경을 감지할 때마다 실행
+  // charList 변경을 감지할 때마다 실행: 현재 유저 상태 보여주기
   useEffect(() => {
     drawChar();
     setUserStateView(charList.find((char) => char.id === userStateView.id));
@@ -109,27 +96,15 @@ const App = () => {
 
   // 키를 누르고 뗄 때마다 실행시킬 함수
   const onKeyDown = (e) => {
-    if (e.key === "ArrowUp") {
-      setKeyPress({ ...keyPress, up: 1 });
-    } else if (e.key === "ArrowDown") {
-      setKeyPress({ ...keyPress, down: 1 });
-    } else if (e.key === "ArrowLeft") {
-      setKeyPress({ ...keyPress, left: 1 });
-    } else if (e.key === "ArrowRight") {
-      setKeyPress({ ...keyPress, right: 1 });
-    }
+    sendSocketEvent("updateKeyPress", { key: e.key, type: "DOWN" });
   };
 
   const onKeyUp = (e) => {
-    if (e.key === "ArrowUp") {
-      setKeyPress({ ...keyPress, up: 0 });
-    } else if (e.key === "ArrowDown") {
-      setKeyPress({ ...keyPress, down: 0 });
-    } else if (e.key === "ArrowLeft") {
-      setKeyPress({ ...keyPress, left: 0 });
-    } else if (e.key === "ArrowRight") {
-      setKeyPress({ ...keyPress, right: 0 });
-    }
+    sendSocketEvent("updateKeyPress", { key: e.key, type: "UP" });
+  };
+
+  const updateSpeed = (type) => {
+    sendSocketEvent("updateSpeed", { type });
   };
 
   return (
@@ -141,7 +116,7 @@ const App = () => {
       />
 
       {/* 키 눌림 상태를 시각적으로 보여줌 */}
-      {userStateView && <UserStateView keyPress={keyPress} userStateView={userStateView} />}
+      {userStateView && <UserStateView updateSpeed={updateSpeed} userStateView={userStateView} />}
     </>
   );
 };

@@ -12,10 +12,10 @@ let Character = class {
     };
     // 키 눌림 상태
     this.keyPress = {
-      up: 0,
-      down: 0,
-      right: 0,
-      left: 0,
+      ArrowUp: 0,
+      ArrowDown: 0,
+      ArrowLeft: 0,
+      ArrowRight: 0,
     };
     // 겹쳤는지
     this.overlapped = false;
@@ -47,31 +47,37 @@ const deleteChar = (id) => {
 // 캐릭터 이동
 const moveChar = (id) => {
   charList.map((char) => {
-    const { up, down, left, right } = char.keyPress;
+    const { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } = char.keyPress;
 
     if (
-      (up && !down && left && !right) ||
-      (up && !down && !left && right) ||
-      (!up && down && left && !right) ||
-      (!up && down && !left && right)
+      (ArrowUp && !ArrowDown && ArrowLeft && !ArrowRight) ||
+      (ArrowUp && !ArrowDown && !ArrowLeft && ArrowRight) ||
+      (!ArrowUp && ArrowDown && ArrowLeft && !ArrowRight) ||
+      (!ArrowUp && ArrowDown && !ArrowLeft && ArrowRight)
     ) {
-      char.location.y -= up * char.speed * 2 ** -0.5;
-      char.location.y += down * char.speed * 2 ** -0.5;
-      char.location.x -= left * char.speed * 2 ** -0.5;
-      char.location.x += right * char.speed * 2 ** -0.5;
+      char.location.y -= ArrowUp * char.speed * 2 ** -0.5;
+      char.location.y += ArrowDown * char.speed * 2 ** -0.5;
+      char.location.x -= ArrowLeft * char.speed * 2 ** -0.5;
+      char.location.x += ArrowRight * char.speed * 2 ** -0.5;
     } else {
-      char.location.y -= up * char.speed;
-      char.location.y += down * char.speed;
-      char.location.x -= left * char.speed;
-      char.location.x += right * char.speed;
+      char.location.y -= ArrowUp * char.speed;
+      char.location.y += ArrowDown * char.speed;
+      char.location.x -= ArrowLeft * char.speed;
+      char.location.x += ArrowRight * char.speed;
     }
   });
 };
 
 // 키 눌림 상태 업데이트
-const updateKeyPress = (id, keyPress) => {
-  if (!keyPress) return;
-  charList.find((char) => char.id === id).keyPress = keyPress;
+const updateKeyPress = (id, type, key) => {
+  const targetChar = charList.find((char) => char.id === id);
+  targetChar.keyPress[key] = type === "DOWN";
+};
+
+const updateSpeed = (id, type) => {
+  const targetChar = charList.find((char) => char.id === id);
+  if (type === "+1") targetChar.speed += 1;
+  if (type === "-1") targetChar.speed -= 1;
 };
 
 // 겹쳤는지 계산
@@ -98,5 +104,6 @@ module.exports = {
   moveChar,
   updateKeyPress,
   computeOverlapped,
+  updateSpeed,
   charList,
 };
